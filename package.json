@@ -1,0 +1,12 @@
+{
+	"name": "ai-chatbot",
+	"version": "1.0.0",
+	"scripts": {
+		"format": "biome format --write",
+		"lint": "biome check .",
+		"check": "biome check --write"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.1"
+	}
+}
