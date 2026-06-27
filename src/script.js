@@ -15,27 +15,39 @@ const createMessageElement = (content, classes) => {
 }
 
 //Handle outgoing user messages
-const HandelOutgoingMessage = (userMessage) => {
-
+const handelOutgoingMessage = (e) => {
     e.preventDefault();
     userData.message = messageInput.value.trim();
 
+    //Safety checks if the user is not sending any messages
+    if (!userData.message) {
+        return;
+    };
+
     //Create and display user message
-    const messageContent = `<div class="message-text">${userMessage}</div>`;
+    const messageContent = `<div class="message-text">${userData.message}</div>`;
     const outGoingMessageDiv = createMessageElement(messageContent, "user-message");
     chatBody.appendChild(outGoingMessageDiv);
+
+
+    // Clear the input field automatically after sendin
+    messageInput.value = "";
 };
 
 //Handle Enter key press for sending message
 messageInput.addEventListener("keydown", (e) => {
     const userMessage = e.target.value.trim();
 
-    if (e.key === "Enter" && userMessage) {
+    // Send only if Enter is pressed without holding Shift (so users can still drop to a new line if they want)
+    if (e.key === "Enter" && !e.shiftKey && userMessage) {
+        //Prevents a messy line break 
+        e.preventDefault();
         HandelOutgoingMessage(userMessage);
     }
 });
 
 
+//Send the message when the "Send" button is clicked
 sendMessageButton.addEventListener("click", (e) => {
-    HandelOutgoingMessage(e)
+    handelOutgoingMessage(e);
 });
