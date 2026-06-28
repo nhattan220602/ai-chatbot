@@ -3,45 +3,40 @@ const chatBody = document.querySelector(".chat-body");
 const sendMessageButton = document.querySelector("#send-message");
 
 const userData = {
-	message: null,
+    message: null,
 };
 
 //Create message element with dynamic classes and return it
 const createMessageElement = (content, ...classes) => {
-	const div = document.createElement("div");
-	div.classList.add("message", ...classes);
-	div.innerHTML = content;
-	return div;
+    const div = document.createElement("div");
+    div.classList.add("message", ...classes);
+    div.innerHTML = content;
+    return div;
 };
 
 //Handle outgoing user messages
 const handelOutgoingMessage = (e) => {
-	e.preventDefault();
-	userData.message = messageInput.value.trim();
+    e.preventDefault(e);
+    userData.message = messageInput.value.trim();
 
-	messageInput.value = "";
+    messageInput.value = "";
 
-	//Safety checks if the user is not sending any messages
-	if (!userData.message) {
-		return;
-	}
+    //Create and display user message
+    const messageContent = `<div class="message-text"></div>`;
+    const outGoingMessageDiv = createMessageElement(
+        messageContent,
+        "user-message",
+    );
 
-	//Create and display user message
-	const messageContent = `<div class="message-text"></div>`;
-	const outGoingMessageDiv = createMessageElement(
-		messageContent,
-		"user-message",
-	);
+    //Setting user's message as textContent to ensure proper text rendering
+    outGoingMessageDiv.querySelector(".message-text").textContent =
+        userData.message;
+    chatBody.appendChild(outGoingMessageDiv);
 
-	//Setting user's message as textContent to ensure proper text rendering
-	outGoingMessageDiv.querySelector(".message-text").textContent =
-		userData.message;
-	chatBody.appendChild(outGoingMessageDiv);
-
-	//Stimulate bot response with thinking indicator after a delay
-	setTimeout(() => {
-		//Create and display bot message
-		const messageContent = `<svg
+    //Stimulate bot response with thinking indicator after a delay
+    setTimeout(() => {
+        //Create and display bot message
+        const messageContent = `<svg
             class="chatbot-logo"
             xmlns="http://www.w3.org/2000/svg"
             width="50"
@@ -58,28 +53,28 @@ const handelOutgoingMessage = (e) => {
             </div>
         </div>`;
 
-		const incomingMessageDiv = createMessageElement(
-			messageContent,
-			"bot-message",
-			"thinking",
-		);
-		chatBody.appendChild(incomingMessageDiv);
-	}, 600);
+        const incomingMessageDiv = createMessageElement(
+            messageContent,
+            "bot-message",
+            "thinking"
+        );
+        chatBody.appendChild(incomingMessageDiv);
+    }, 600);
 };
 
 //Handle Enter key press for sending message
 messageInput.addEventListener("keydown", (e) => {
-	const userMessage = e.target.value.trim();
+    const userMessage = e.target.value.trim();
 
-	// Send only if Enter is pressed without holding Shift (so users can still drop to a new line if they want)
-	if (e.key === "Enter" && !e.shiftKey && userMessage) {
-		//Prevents a messy line break
-		e.preventDefault();
-		handelOutgoingMessage(userMessage);
-	}
+    // Send only if Enter is pressed without holding Shift (so users can still drop to a new line if they want)
+    if (e.key === "Enter" && !e.shiftKey && userMessage) {
+        //Prevents a messy line break
+        e.preventDefault();
+        handelOutgoingMessage(e);
+    }
 });
 
 //Send the message when the "Send" button is clicked
 sendMessageButton.addEventListener("click", (e) => {
-	handelOutgoingMessage(e);
+    handelOutgoingMessage(e);
 });
