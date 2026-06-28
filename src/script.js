@@ -25,8 +25,12 @@ const handelOutgoingMessage = (e) => {
     };
 
     //Create and display user message
-    const messageContent = `<div class="message-text">${userData.message}</div>`;
+    const messageContent = `<div class="message-text"></div>`;
     const outGoingMessageDiv = createMessageElement(messageContent, "user-message");
+
+    //Setting user's message as textContent to ensure proper text rendering 
+    outGoingMessageDiv.querySelector(".message-text").textContent = userData.message;
+
     chatBody.appendChild(outGoingMessageDiv);
 
 
