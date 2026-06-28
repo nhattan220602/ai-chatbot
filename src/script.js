@@ -19,6 +19,8 @@ const handelOutgoingMessage = (e) => {
     e.preventDefault();
     userData.message = messageInput.value.trim();
 
+    messageInput.value = "";
+
     //Safety checks if the user is not sending any messages
     if (!userData.message) {
         return;
