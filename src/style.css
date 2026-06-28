@@ -141,7 +141,7 @@ body {
 	opacity: 0.7;
 	border-radius: 50%;
 	background: #93d49b;
-	/* animation: dotPulse 1.8s ease-in-out infinite; */
+	animation: dotPulse 1.8s ease-in-out infinite;
 }
 
 /* Making bot thinking animation*/
