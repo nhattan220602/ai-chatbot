@@ -8,6 +8,10 @@ const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-
 
 const userData = {
 	message: null,
+	file: {
+		data: null,
+		mime_type: null,
+	},
 };
 
 //Create message element with dynamic classes and return it
@@ -29,7 +33,10 @@ const generateBotResponse = async (incomingMessageDiv) => {
 		body: JSON.stringify({
 			contents: [
 				{
-					parts: [{ text: userData.message }],
+					parts: [
+						{ text: userData.message },
+						...(userData.file.data ? [{ inline_data: userData.file }] : []),
+					],
 				},
 			],
 		}),
@@ -137,6 +144,7 @@ messageInput.addEventListener("keydown", (e) => {
 	}
 });
 
+//Handle file input change
 fileInput.addEventListener("change", () => {
 	const file = fileInput.files[0];
 	if (!file) {
@@ -145,7 +153,15 @@ fileInput.addEventListener("change", () => {
 		const reader = new FileReader();
 
 		reader.onload = (e) => {
-			console.log(e.target.result);
+			const base64String = e.target.result.split(",")[1];
+
+			//Store file data in userData
+			userData.file = {
+				data: base64String,
+				mime_type: file.type,
+			};
+
+			fileInput.value = "";
 		};
 
 		//Converting file to base64 format
