@@ -63,9 +63,12 @@ const generateBotResponse = async (incomingMessageDiv) => {
         messageElement.innerText = error.message;
         messageElement.style.color = "#ff0000";
     } finally {
-        //Remove thinking class
+        //Reset user's file data
+        userData.file = {};
+
+        //Remove thinking indicator (class)
         incomingMessageDiv.classList.remove("thinking");
-        //An automatic scrolling when sending or receiving messages
+        //An automatic scrolling to bottom when sending or receiving messages
         chatBody.scrollTo({
             top: chatBody.scrollHeight,
             behavior: "smooth",
