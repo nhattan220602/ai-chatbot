@@ -77,9 +77,16 @@
             <button class="material-symbols-rounded" type="button">
               sentiment_satisfied
             </button>
-            <button class="material-symbols-rounded" type="button">
-              attach_file
-            </button>
+            <div class="file-upload-wrapper">
+              <input type="file" accept="images/*" id="file-input" hidden />
+              <button
+                class="material-symbols-rounded"
+                id="file-upload"
+                type="button"
+              >
+                attach_file
+              </button>
+            </div>
             <button
               class="material-symbols-rounded"
               type="submit"
