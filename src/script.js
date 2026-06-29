@@ -21,7 +21,6 @@ const createMessageElement = (content, ...classes) => {
 const generateBotResponse = async (incomingMessageDiv) => {
     const messageElement = incomingMessageDiv.querySelector(".message-text");
 
-
     //API request options in AI google dev Documentation
     const requestOptions = {
         method: "POST",
@@ -44,13 +43,22 @@ const generateBotResponse = async (incomingMessageDiv) => {
             throw new Error(data.error.message);
         } else {
             //Extract and display bot's response in text
-            const apiResponseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
+            const apiResponseText = data.candidates[0].content.parts[0].text
+                //Remove extra asterisks from bot's response
+                .replace(/\*\*(.*?)\*\*/g, "$1")
+                .trim();
             messageElement.innerText = apiResponseText;
         }
     } catch (error) {
         console.log(error);
     } finally {
+        //Remove thinking class
         incomingMessageDiv.classList.remove("thinking");
+        //An automatic scrolling when sending or receiving messages
+        chatBody.scrollTo({
+            top: chatBody.scrollHeight,
+            behavior: "smooth",
+        });
     }
 };
 
@@ -72,6 +80,12 @@ const handelOutgoingMessage = (e) => {
     outGoingMessageDiv.querySelector(".message-text").textContent =
         userData.message;
     chatBody.appendChild(outGoingMessageDiv);
+
+    //An automatic scrolling when sending or receiving messages
+    chatBody.scrollTo({
+        top: chatBody.scrollHeight,
+        behavior: "smooth",
+    });
 
     //Stimulate bot response with thinking indicator after a delay
     setTimeout(() => {
@@ -99,6 +113,11 @@ const handelOutgoingMessage = (e) => {
             "thinking",
         );
         chatBody.appendChild(incomingMessageDiv);
+        //An automatic scrolling when sending or receiving messages
+        chatBody.scrollTo({
+            top: chatBody.scrollHeight,
+            behavior: "smooth",
+        });
         generateBotResponse(incomingMessageDiv);
     }, 600);
 };
