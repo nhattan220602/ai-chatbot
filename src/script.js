@@ -51,6 +51,8 @@ const generateBotResponse = async (incomingMessageDiv) => {
         }
     } catch (error) {
         console.log(error);
+        messageElement.innerText = error.message;
+        messageElement.style.color = "#ff0000";
     } finally {
         //Remove thinking class
         incomingMessageDiv.classList.remove("thinking");
