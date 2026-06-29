@@ -2,6 +2,9 @@ const messageInput = document.querySelector(".message-input");
 const chatBody = document.querySelector(".chat-body");
 const sendMessageButton = document.querySelector("#send-message");
 
+//API setup
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+
 const userData = {
     message: null,
 };
@@ -12,6 +15,36 @@ const createMessageElement = (content, ...classes) => {
     div.classList.add("message", ...classes);
     div.innerHTML = content;
     return div;
+};
+
+//Generate bot response using API
+const generateBotResponse = async () => {
+    //API request options in AI google dev Documentation
+    const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: [
+                {
+                    parts: [{ text: userData.message }],
+                },
+            ],
+        }),
+    };
+
+    //Fetch bot response from API
+    try {
+        const response = await fetch(API_URL, requestOptions);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error.message);
+        } else {
+            console.log(data);
+        }
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 //Handle outgoing user messages
@@ -56,13 +89,14 @@ const handelOutgoingMessage = (e) => {
         const incomingMessageDiv = createMessageElement(
             messageContent,
             "bot-message",
-            "thinking"
+            "thinking",
         );
         chatBody.appendChild(incomingMessageDiv);
+        generateBotResponse();
     }, 600);
 };
 
-//Handle Enter key press for sending message
+// //Handle Enter key press for sending message
 messageInput.addEventListener("keydown", (e) => {
     const userMessage = e.target.value.trim();
 
