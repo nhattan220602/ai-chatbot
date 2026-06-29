@@ -44,7 +44,7 @@ const generateBotResponse = async (incomingMessageDiv) => {
             throw new Error(data.error.message);
         } else {
             //Extract and display bot's response in text
-            const apiResponseText = data.candidates[0].content.parts[0].text.trim();
+            const apiResponseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
             messageElement.innerText = apiResponseText;
         }
     } catch (error) {
