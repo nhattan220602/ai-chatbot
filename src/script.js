@@ -198,7 +198,7 @@ document
     .addEventListener("click", () => fileInput.click());
 
 //File cancel button
-fileCancelButton.addEventListener("click", (e) => {
+fileCancelButton.addEventListener("click", () => {
     userData.file = {};
     fileUploadWrapper.classList.remove("file-uploaded")
 });
@@ -210,12 +210,12 @@ const picker = new EmojiMart.Picker({
     previewPosition: "none",
     //Handel emoji selection
     onEmojiSelect: (emoji) => {
-        const {selectionStart: start, selectionEnd: end} = messageInput; 
+        const { selectionStart: start, selectionEnd: end } = messageInput;
         messageInput.setRangeText(emoji.native, start, end, "end");
         messageInput.focus();
     },
 
-    
+
     onClickOutside: (e) => {
         if (e.target.id === "emoji-picker") {
             document.body.classList.toggle("show-emoji-picker");
