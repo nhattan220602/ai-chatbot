@@ -1,10 +1,15 @@
+/* 1. DOM Elements initialize */
+
 const messageInput = document.querySelector(".message-input");
 const chatBody = document.querySelector(".chat-body");
 const sendMessageButton = document.querySelector("#send-message");
 const fileInput = document.querySelector("#file-input");
 const fileUploadWrapper = document.querySelector(".file-upload-wrapper");
 const fileCancelButton = document.querySelector("#file-cancel");
+const chatBotToggler = document.querySelector("#chatbot-toggler");
+const closeChatBot = document.querySelector("#close-chatbot");
 
+/* 2. Constants & State */
 
 //API setup
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
@@ -17,6 +22,8 @@ const userData = {
     },
 };
 
+/* 3. UI Helper Functions */
+
 //Create message element with dynamic classes and return it
 const createMessageElement = (content, ...classes) => {
     const div = document.createElement("div");
@@ -24,6 +31,8 @@ const createMessageElement = (content, ...classes) => {
     div.innerHTML = content;
     return div;
 };
+
+/* 4. API Handling */
 
 //Generate bot response using API
 const generateBotResponse = async (incomingMessageDiv) => {
@@ -79,6 +88,8 @@ const generateBotResponse = async (incomingMessageDiv) => {
     }
 };
 
+/* 5. Event Listeners */
+
 //Handle outgoing user messages
 const handelOutgoingMessage = (e) => {
     e.preventDefault(e);
@@ -86,7 +97,6 @@ const handelOutgoingMessage = (e) => {
 
     messageInput.value = "";
     fileUploadWrapper.classList.remove("file-uploaded");
-
 
     //Create and display user message
     const messageContent = `<div class="message-text"></div>
@@ -187,21 +197,7 @@ fileInput.addEventListener("change", () => {
     }
 });
 
-//Send the message when the "Send" button is clicked
-sendMessageButton.addEventListener("click", (e) => {
-    handelOutgoingMessage(e);
-});
-
-//Trigger the file input when the file upload button is clicked
-document
-    .querySelector("#file-upload")
-    .addEventListener("click", () => fileInput.click());
-
-//File cancel button
-fileCancelButton.addEventListener("click", () => {
-    userData.file = {};
-    fileUploadWrapper.classList.remove("file-uploaded")
-});
+/* 6. Initialization */
 
 //Initialize emoji picker
 const picker = new EmojiMart.Picker({
@@ -215,14 +211,34 @@ const picker = new EmojiMart.Picker({
         messageInput.focus();
     },
 
-
     onClickOutside: (e) => {
         if (e.target.id === "emoji-picker") {
             document.body.classList.toggle("show-emoji-picker");
         } else {
-            document.body.classList.remove("show-emoji-picker")
+            document.body.classList.remove("show-emoji-picker");
         }
-    }
+    },
 });
 
 document.querySelector(".chat-form").appendChild(picker);
+
+/* 7. Click button event section: */
+
+//Send the message when the "Send" button is clicked
+sendMessageButton.addEventListener("click", (e) => {
+    handelOutgoingMessage(e);
+});
+
+//Trigger the file input when the file upload button is clicked
+document
+    .querySelector("#file-upload")
+    .addEventListener("click", () => fileInput.click());
+
+//File cancel button
+fileCancelButton.addEventListener("click", () => {
+    userData.file = {};
+    fileUploadWrapper.classList.remove("file-uploaded");
+});
+
+chatBotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
+closeChatBot.addEventListener("click", () => document.body.classList.remove("show-chatbot"));
