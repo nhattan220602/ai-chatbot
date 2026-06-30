@@ -13,7 +13,7 @@ const closeChatBot = document.querySelector("#close-chatbot");
 
 //API setup
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
-
+name
 const userData = {
 	message: null,
 	file: {
