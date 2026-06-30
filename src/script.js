@@ -23,6 +23,7 @@ const userData = {
 };
 
 //
+const chatHistory = [];
 const initialInputHeight = messageInput.scrollHeight;
 
 /* 3. UI Helper Functions */
@@ -41,20 +42,22 @@ const createMessageElement = (content, ...classes) => {
 const generateBotResponse = async (incomingMessageDiv) => {
     const messageElement = incomingMessageDiv.querySelector(".message-text");
 
+    //Add user message to chat history 
+    chatHistory.push({
+        role: "user",
+        parts: [
+            { text: userData.message },
+            //Sending the file along with message
+            ...(userData.file.data ? [{ inline_data: userData.file }] : []),
+        ],
+    });
+
     //API request options in AI google dev Documentation
     const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            contents: [
-                {
-                    parts: [
-                        { text: userData.message },
-                        //Sending the file along with message
-                        ...(userData.file.data ? [{ inline_data: userData.file }] : []),
-                    ],
-                },
-            ],
+            contents: chatHistory
         }),
     };
 
@@ -72,6 +75,13 @@ const generateBotResponse = async (incomingMessageDiv) => {
                 .replace(/\*\*(.*?)\*\*/g, "$1")
                 .trim();
             messageElement.innerText = apiResponseText;
+
+            //Add bot response to chat history
+            chatHistory.push({
+                role: "model",
+                parts: [
+                    { text: apiResponseText }]
+            });
         }
     } catch (error) {
         console.log(error);
@@ -165,7 +175,12 @@ messageInput.addEventListener("keydown", (e) => {
     const userMessage = e.target.value.trim();
 
     // Send only if Enter is pressed without holding Shift (so users can still drop to a new line if they want)
-    if (e.key === "Enter" && !e.shiftKey && userMessage && window.innerWidth > 768) {
+    if (
+        e.key === "Enter" &&
+        !e.shiftKey &&
+        userMessage &&
+        window.innerWidth > 768
+    ) {
         //Prevents a messy line break
         e.preventDefault();
         handelOutgoingMessage(e);
