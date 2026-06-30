@@ -24,9 +24,9 @@ jobs:
       - name: Create Config File
         run: |
           if [ -z "${{ secrets.GEMINI_API_KEY }}" ]; then
-            echo "const API_KEY = '';" > src/config.js
+            echo "const apiKey = '';" > src/config.js
           else
-            echo "const API_KEY = '${{ secrets.GEMINI_API_KEY }}';" > src/config.js
+            echo "const apiKey = '${{ secrets.GEMINI_API_KEY }}';" > src/config.js
           fi
 
       - name: Setup Pages
