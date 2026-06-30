@@ -13,13 +13,13 @@ const closeChatBot = document.querySelector("#close-chatbot");
 
 //API setup
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
-name
+
 const userData = {
-	message: null,
-	file: {
-		data: null,
-		mime_type: null,
-	},
+    message: null,
+    file: {
+        data: null,
+        mime_type: null,
+    },
 };
 
 //
@@ -30,115 +30,114 @@ const initialInputHeight = messageInput.scrollHeight;
 
 //Create message element with dynamic classes and return it
 const createMessageElement = (content, ...classes) => {
-	const div = document.createElement("div");
-	div.classList.add("message", ...classes);
-	div.innerHTML = content;
-	return div;
+    const div = document.createElement("div");
+    div.classList.add("message", ...classes);
+    div.innerHTML = content;
+    return div;
 };
 
 /* 4. API Handling */
 
 //Generate bot response using API
 const generateBotResponse = async (incomingMessageDiv) => {
-	const messageElement = incomingMessageDiv.querySelector(".message-text");
+    const messageElement = incomingMessageDiv.querySelector(".message-text");
 
-	//Add user response to chat history
-	chatHistory.push({
-		role: "user",
-		parts: [
-			{ text: userData.message },
-			//Sending the file along with message
-			...(userData.file.data ? [{ inline_data: userData.file }] : []),
-		],
-	});
+    //Add user response to chat history
+    chatHistory.push({
+        role: "user",
+        parts: [
+            { text: userData.message },
+            //Sending the file along with message
+            ...(userData.file.data ? [{ inline_data: userData.file }] : []),
+        ],
+    });
 
-	//API request options in AI google dev Documentation
-	const requestOptions = {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({
-			contents: chatHistory,
-		}),
-	};
+    //API request options in AI google dev Documentation
+    const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: chatHistory,
+        }),
+    };
 
-	//Fetch bot response from API
-	try {
-		const response = await fetch(API_URL, requestOptions);
-		const data = await response.json();
+    //Fetch bot response from API
+    try {
+        const response = await fetch(API_URL, requestOptions);
+        const data = await response.json();
 
-		if (!response.ok) {
-			throw new Error(data.error.message);
-		} else {
-			//Extract and display bot's response in text
-			const apiResponseText = data.candidates[0].content.parts[0].text
-				//Remove extra asterisks from bot's response
-				.replace(/\*\*(.*?)\*\*/g, "$1")
-				.trim();
-			messageElement.innerText = apiResponseText;
+        if (!response.ok) {
+            throw new Error(data.error.message);
+        } else {
+            //Extract and display bot's response in text
+            const apiResponseText = data.candidates[0].content.parts[0].text
+                //Remove extra asterisks from bot's response
+                .replace(/\*\*(.*?)\*\*/g, "$1")
+                .trim();
+            messageElement.innerText = apiResponseText;
 
-			//Add bot response to chat history
-			chatHistory.push({
-				role: "model",
-				parts: [{ text: apiResponseText }],
-			});
-		}
-	} catch (error) {
-		console.log(error);
-		messageElement.innerText = error.message;
-		messageElement.style.color = "#ff0000";
-	} finally {
-		//Reset user's file data
-		userData.file = {};
+            //Add bot response to chat history
+            chatHistory.push({
+                role: "model",
+                parts: [{ text: apiResponseText }],
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        messageElement.innerText = error.message;
+        messageElement.style.color = "#ff0000";
+    } finally {
+        //Reset user's file data
+        userData.file = {};
 
-		//Remove thinking indicator (class)
-		incomingMessageDiv.classList.remove("thinking");
-		//An automatic scrolling to bottom when sending or receiving messages
-		chatBody.scrollTo({
-			top: chatBody.scrollHeight,
-			behavior: "smooth",
-		});
-	}
+        //Remove thinking indicator (class)
+        incomingMessageDiv.classList.remove("thinking");
+        //An automatic scrolling to bottom when sending or receiving messages
+        chatBody.scrollTo({
+            top: chatBody.scrollHeight,
+            behavior: "smooth",
+        });
+    }
 };
 
 /* 5. Event Listeners */
 
 //Handle outgoing user messages
 const handelOutgoingMessage = (e) => {
-	e.preventDefault(e);
-	userData.message = messageInput.value.trim();
+    e.preventDefault(e);
+    userData.message = messageInput.value.trim();
 
-	messageInput.value = "";
-	fileUploadWrapper.classList.remove("file-uploaded");
-	messageInput.dispatchEvent(new Event("input"));
+    messageInput.value = "";
+    fileUploadWrapper.classList.remove("file-uploaded");
+    messageInput.dispatchEvent(new Event("input"));
 
-	//Create and display user message
-	const messageContent = `<div class="message-text"></div>
-                            ${
-															userData.file.data
-																? `<img src = "data:${userData.file.mime_type};base64, 
+    //Create and display user message
+    const messageContent = `<div class="message-text"></div>
+                            ${userData.file.data
+            ? `<img src = "data:${userData.file.mime_type};base64, 
                             ${userData.file.data}" class="attachment" />`
-																: ""
-														} `;
-	const outGoingMessageDiv = createMessageElement(
-		messageContent,
-		"user-message",
-	);
+            : ""
+        } `;
+    const outGoingMessageDiv = createMessageElement(
+        messageContent,
+        "user-message",
+    );
 
-	//Setting user's message as textContent to ensure proper text rendering
-	outGoingMessageDiv.querySelector(".message-text").textContent =
-		userData.message;
-	chatBody.appendChild(outGoingMessageDiv);
+    //Setting user's message as textContent to ensure proper text rendering
+    outGoingMessageDiv.querySelector(".message-text").textContent =
+        userData.message;
+    chatBody.appendChild(outGoingMessageDiv);
 
-	//An automatic scrolling when sending or receiving messages
-	chatBody.scrollTo({
-		top: chatBody.scrollHeight,
-		behavior: "smooth",
-	});
+    //An automatic scrolling when sending or receiving messages
+    chatBody.scrollTo({
+        top: chatBody.scrollHeight,
+        behavior: "smooth",
+    });
 
-	//Stimulate bot response with thinking indicator after a delay
-	setTimeout(() => {
-		//Create and display bot message
-		const messageContent = `<svg
+    //Stimulate bot response with thinking indicator after a delay
+    setTimeout(() => {
+        //Create and display bot message
+        const messageContent = `<svg
             class="chatbot-logo"
             xmlns="http://www.w3.org/2000/svg"
             width="50"
@@ -155,96 +154,96 @@ const handelOutgoingMessage = (e) => {
             </div>
         </div>`;
 
-		const incomingMessageDiv = createMessageElement(
-			messageContent,
-			"bot-message",
-			"thinking",
-		);
-		chatBody.appendChild(incomingMessageDiv);
-		//An automatic scrolling when sending or receiving messages
-		chatBody.scrollTo({
-			top: chatBody.scrollHeight,
-			behavior: "smooth",
-		});
-		generateBotResponse(incomingMessageDiv);
-	}, 600);
+        const incomingMessageDiv = createMessageElement(
+            messageContent,
+            "bot-message",
+            "thinking",
+        );
+        chatBody.appendChild(incomingMessageDiv);
+        //An automatic scrolling when sending or receiving messages
+        chatBody.scrollTo({
+            top: chatBody.scrollHeight,
+            behavior: "smooth",
+        });
+        generateBotResponse(incomingMessageDiv);
+    }, 600);
 };
 
 //Handle Enter key press for sending message
 messageInput.addEventListener("keydown", (e) => {
-	const userMessage = e.target.value.trim();
+    const userMessage = e.target.value.trim();
 
-	// Send only if Enter is pressed without holding Shift (so users can still drop to a new line if they want)
-	if (
-		e.key === "Enter" &&
-		!e.shiftKey &&
-		userMessage &&
-		window.innerWidth > 768
-	) {
-		//Prevents a messy line break
-		e.preventDefault();
-		handelOutgoingMessage(e);
-	}
+    // Send only if Enter is pressed without holding Shift (so users can still drop to a new line if they want)
+    if (
+        e.key === "Enter" &&
+        !e.shiftKey &&
+        userMessage &&
+        window.innerWidth > 768
+    ) {
+        //Prevents a messy line break
+        e.preventDefault();
+        handelOutgoingMessage(e);
+    }
 });
 
 // Adjust input field height dynamically
 messageInput.addEventListener("input", () => {
-	messageInput.style.height = `${initialInputHeight}px`;
-	messageInput.style.height = `${messageInput.scrollHeight}px`;
-	document.querySelector(".chat-form").style.borderRadius =
-		messageInput.scrollHeight > initialInputHeight ? "15px" : "32px";
+    messageInput.style.height = `${initialInputHeight}px`;
+    messageInput.style.height = `${messageInput.scrollHeight}px`;
+    document.querySelector(".chat-form").style.borderRadius =
+        messageInput.scrollHeight > initialInputHeight ? "15px" : "32px";
 });
 
 //Handle file input change
 fileInput.addEventListener("change", () => {
-	const file = fileInput.files[0];
-	if (!file) {
-		return;
-	} else {
-		const reader = new FileReader();
+    const file = fileInput.files[0];
+    if (!file) {
+        return;
+    } else {
+        const reader = new FileReader();
 
-		reader.onload = (e) => {
-			//Preview the selected file
-			fileUploadWrapper.querySelector("img").src = e.target.result;
-			fileUploadWrapper.classList.add("file-uploaded");
+        reader.onload = (e) => {
+            //Preview the selected file
+            fileUploadWrapper.querySelector("img").src = e.target.result;
+            fileUploadWrapper.classList.add("file-uploaded");
 
-			const base64String = e.target.result.split(",")[1];
+            const base64String = e.target.result.split(",")[1];
 
-			//Store file data in userData
-			userData.file = {
-				data: base64String,
-				mime_type: file.type,
-			};
+            //Store file data in userData
+            userData.file = {
+                data: base64String,
+                mime_type: file.type,
+            };
 
-			fileInput.value = "";
-		};
+            fileInput.value = "";
+        };
 
-		//Converting file to base64 format
-		reader.readAsDataURL(file);
-	}
+        //Converting file to base64 format
+        reader.readAsDataURL(file);
+    }
 });
 
 /* 6. Initialization */
 
 //Initialize emoji picker
 const picker = new EmojiMart.Picker({
-	theme: "dark",
-	skinTonePosition: "none",
-	previewPosition: "none",
-	//Handel emoji selection
-	onEmojiSelect: (emoji) => {
-		const { selectionStart: start, selectionEnd: end } = messageInput;
-		messageInput.setRangeText(emoji.native, start, end, "end");
-		messageInput.focus();
-	},
+    theme: "dark",
+    skinTonePosition: "none",
+    previewPosition: "none",
+    //Handel emoji selection
+    onEmojiSelect: (emoji) => {
+        const { selectionStart: start, selectionEnd: end } = messageInput;
+        messageInput.setRangeText(emoji.native, start, end, "end");
+        messageInput.focus();
+    },
 
-	onClickOutside: (e) => {
-		if (e.target.id === "emoji-picker") {
-			document.body.classList.toggle("show-emoji-picker");
-		} else {
-			document.body.classList.remove("show-emoji-picker");
-		}
-	},
+    onClickOutside: (e) => {
+        if (e.target.id === "emoji-picker") {
+            document.body.classList.toggle("show-emoji-picker");
+        } else {
+            document.body.classList.remove("show-emoji-picker");
+        }
+    },
 });
 
 document.querySelector(".chat-form").appendChild(picker);
@@ -253,23 +252,23 @@ document.querySelector(".chat-form").appendChild(picker);
 
 //Send the message when the "Send" button is clicked
 sendMessageButton.addEventListener("click", (e) => {
-	handelOutgoingMessage(e);
+    handelOutgoingMessage(e);
 });
 
 //Trigger the file input when the file upload button is clicked
 document
-	.querySelector("#file-upload")
-	.addEventListener("click", () => fileInput.click());
+    .querySelector("#file-upload")
+    .addEventListener("click", () => fileInput.click());
 
 //File cancel button
 fileCancelButton.addEventListener("click", () => {
-	userData.file = {};
-	fileUploadWrapper.classList.remove("file-uploaded");
+    userData.file = {};
+    fileUploadWrapper.classList.remove("file-uploaded");
 });
 
 chatBotToggler.addEventListener("click", () =>
-	document.body.classList.toggle("show-chatbot"),
+    document.body.classList.toggle("show-chatbot"),
 );
 closeChatBot.addEventListener("click", () =>
-	document.body.classList.remove("show-chatbot"),
+    document.body.classList.remove("show-chatbot"),
 );
