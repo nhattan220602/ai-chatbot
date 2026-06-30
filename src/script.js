@@ -42,7 +42,7 @@ const createMessageElement = (content, ...classes) => {
 const generateBotResponse = async (incomingMessageDiv) => {
     const messageElement = incomingMessageDiv.querySelector(".message-text");
 
-    //Add user message to chat history 
+    //Add user response to chat history 
     chatHistory.push({
         role: "user",
         parts: [
