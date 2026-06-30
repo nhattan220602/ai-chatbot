@@ -133,7 +133,7 @@ body {
 
 .chat-body .user-message .message-text {
 	color: #fff;
-	background: #037d13;
+	background: #73553e;
 	border-radius: 12px 12px 12px 12px;
 }
 
@@ -148,7 +148,7 @@ body {
 	width: 7px;
 	opacity: 0.7;
 	border-radius: 50%;
-	background: #93d49b;
+	background: #73553e;
 	animation: dotPulse 1.8s ease-in-out infinite;
 }
 
@@ -281,4 +281,19 @@ body {
 .chat-form .file-upload-wrapper.file-uploaded img,
 .chat-form .file-upload-wrapper.file-uploaded:hover #file-cancel {
 	display: block;
+}
+
+em-emoji-picker {
+	position: absolute;
+	left: 50%;
+	top: -337px;
+	width: 100%;
+	max-width: 350px;
+	max-height: 330px;
+	visibility: hidden;
+	transform: translateX(-50%);
+}
+
+body.show-emoji-picker em-emoji-picker {
+	visibility: visible;
 }
